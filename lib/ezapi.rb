@@ -1,5 +1,7 @@
 require "ezapi/version"
+require "ezapi/errors"
+require "ezapi/utils"
+require "ezapi/api_client"
 
-module Ezapi
-  # Your code goes here...
+module EZApi
 end
