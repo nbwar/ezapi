@@ -73,8 +73,20 @@ ThirdPartyApp::User.new.custom_instance_action
 module ThirdPartyApp
   module Actions
     module MyCustomAction
+      # For instance methods
       def my_custom_action
         # Do Something
+      end
+
+      # For class methods
+      module ClassMethods
+        def my_custom_class_action
+          # do something
+        end
+      end
+
+      def self.included(base)
+        base.extend(ClassMethods)
       end
     end
   end
