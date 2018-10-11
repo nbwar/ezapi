@@ -5,7 +5,7 @@ module EZApi
         # response = self.class.client.send(request_type, save_path, as_json)
         response = false
         assign_attributes(response) if response
-        self
+        true
       end
 
       private

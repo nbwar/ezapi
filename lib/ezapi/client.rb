@@ -25,7 +25,7 @@ module EZApi
     end
 
     def request(full_url, method, params={})
-      raise AuthenticationError.new("API key is not set for #{self.app_name}.") unless self.key
+      raise(AuthenticationError, "API key is not set for #{self.app_name}.") unless self.key
 
       begin
         response = RestClient::Request.execute(method: method, url: full_url, payload: params.to_json, headers: request_headers)
@@ -70,11 +70,11 @@ module EZApi
         message = parse_error_message(body)
         case code
         when 400, 404
-          raise InvalidRequestError.new(message)
+          raise(InvalidRequestError, message)
         when 401
-          raise AuthenticationError.new(message)
+          raise(AuthenticationError, message)
         else
-          raise ApiError.new(message)
+          raise(ApiError, message)
         end
       end
 
@@ -86,7 +86,7 @@ module EZApi
           message = "Could not connect to #{app_name}."
         end
 
-        raise ConnectionError.new(message)
+        raise(ConnectionError, message)
       end
   end
 end
