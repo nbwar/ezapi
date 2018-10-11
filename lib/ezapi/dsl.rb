@@ -10,9 +10,12 @@ module EZApi
       end
 
       def actions(actions)
-        actions.each { |action| include EZApi::Actions.const_get(action.to_s.camelize) }
+        actions.each do |action|
+          include_action(action)
+        end
+
         if (actions & [:create, :update]).any? && !actions.include?(:save)
-          include EZApi::Actions::Save
+          include_action(:save)
         end
       end
 
@@ -25,6 +28,15 @@ module EZApi
         path = self.name.demodulize.underscore.pluralize
         "#{CGI.escape(path)}"
       end
+
+      private
+        def include_action(action)
+          begin
+            include client::Actions.const_get(action.to_s.camelize)
+          rescue NameError
+            include EZApi::Actions.const_get(action.to_s.camelize)
+          end
+        end
     end
 
   end

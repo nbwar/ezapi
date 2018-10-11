@@ -70,13 +70,13 @@ ThirdPartyApp::User.new.custom_instance_action
 ```
 
 
-#### Add custome actions to actions array
+#### Add custom actions to actions array
 ```ruby
 module ThirdPartyApp
   module Actions
     module MyCustomAction
       def my_custom_action
-    # Do Something
+        # Do Something
       end
     end
   end
@@ -89,3 +89,4 @@ module ThirdPartyApp
 end
 
 ```
+You can even override the include REST actions using this method
