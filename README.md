@@ -48,23 +48,17 @@ There are two ways of adding custom actions that are not in the included rest
 ```ruby
 module ThirdPartyApp
   class User < EZApi::ObjectBase
-
     # For class methods
-    module ClassMethods
-        def custom_action
-          response = client.get("#{api_path}/custom_action")
-          # Do whatever you want with the response
-        end
-      end
+    def self.custom_action
+      response = client.get("#{api_path}/custom_action")
+      # Do whatever you want with the response
+    end
 
-      def self.included(base)
-        base.extend(ClassMethods)
-      end
-
-      def custom_instance_action
-        response = self.class.client.get("#{self.class.api_path}/custom_action")
-        # Do whatever you want with the response
-      end
+    # for instance methods
+    def custom_instance_action
+      response = self.class.client.get("#{self.class.api_path}/custom_action")
+      # Do whatever you want with the response
+    end
   end
 end
 
