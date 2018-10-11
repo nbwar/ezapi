@@ -1,35 +1,85 @@
-# Ezapi
+# EZApi
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ezapi`. To experiment with that code, run `bin/console` for an interactive prompt.
+EZApi makes interfacing with third party APIs easy! EZApi handles network requests, responses, and serializes the object into an easy to use ruby object. Standard RESTful actions are included out of the box  and you can easily add custom actions.
 
-TODO: Delete this and the text above, and describe your gem
+## Usage
 
-## Installation
-
-Add this line to your application's Gemfile:
-
+Install the gem
 ```ruby
 gem 'ezapi'
 ```
 
-And then execute:
+Define your API client & models
+```ruby
+module ThirdPartyApp
+  extend EZApi::Client
 
-    $ bundle
+  api_url 'http://www.example.com/api/' # => / at the end is required
+  api_key 'XXXXXX' # => required
 
-Or install it yourself as:
 
-    $ gem install ezapi
+  class User < EZApi::ObjectBase
+    path 'foo' # => to create custom path. Defaults to 'users' in this case
+    actions [:show, :create, :delete, :update, :index] # => Included RESTful actions
+  end
+end
+```
 
-## Usage
+Now we can call `http://www.example.com/api/users` endpoints
+```ruby
+user = ThirdPartyApp::User.show('123')
+user.first_name # => returns first_name json field
+```
 
-TODO: Write usage instructions here
 
-## Development
+### Custom actions
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+There are two ways of adding custom actions that are not in the included rest
+```ruby
+module ThirdPartyApp
+  class User < EZApi::ObjectBase
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+    # For class methods
+    module ClassMethods
+        def custom_action
+          response = client.get("#{api_path}/custom_action")
+          # Do whatever you want with the response
+        end
+      end
 
-## Contributing
+      def self.included(base)
+        base.extend(ClassMethods)
+      end
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ezapi.
+      def custom_instance_action
+        response = self.class.client.get("#{self.class.api_path}/custom_action")
+        # Do whatever you want with the response
+      end
+  end
+end
+
+
+ThirdPartyApp::User.customer_action
+ThirdPartyApp::User.new.custom_instance_action
+```
+
+
+#### Add customer actions to actions array
+```ruby
+module ThirdPartyApp
+  module Actions
+    module MyCustomAction
+      def my_custom_action
+    # Do Something
+      end
+    end
+  end
+end
+
+module ThirdPartyApp
+  class User < EZApi::ObjectBase
+    actions [:my_custom_action]
+  end
+end
+
+```
