@@ -27,14 +27,18 @@ end
 
 Now we can call `http://www.example.com/api/users` endpoints
 ```ruby
-user = ThirdPartyApp::User.show('123')
-user.first_name # => returns first_name json field
-user.first_name = 'new name'
-user.save
+begin
+  user = ThirdPartyApp::User.show('123')
+  user.first_name # => returns first_name json field
+  user.first_name = 'new name'
+  user.save
 
-ThirdPartyApp::User.delete('123')
-ThirdPartyApp::User.update({first_name: 'Name'})
-ThirdPartyApp::User.index({page: 1})
+  ThirdPartyApp::User.delete('123')
+  ThirdPartyApp::User.update({first_name: 'Name'})
+  ThirdPartyApp::User.index({page: 1})
+rescue EZApiError => e
+  print(e.message)
+end
 ```
 
 
