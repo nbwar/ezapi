@@ -2,8 +2,7 @@ module EZApi
   module Actions
     module Save
       def save
-        # response = self.class.client.send(request_type, save_path, as_json)
-        response = false
+        response = self.class.client.send(request_type, save_path, as_json)
         assign_attributes(response) if response
         true
       end

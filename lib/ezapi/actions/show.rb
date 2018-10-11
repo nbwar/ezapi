@@ -3,18 +3,7 @@ module EZApi
     module Show
       module ClassMethods
         def show(id)
-          # response = client.get("#{api_path}/#{id}")
-          response = {
-            'id' => '2',
-            'warehouse' => 'Albertsons',
-            'user' => {
-              'first_name' => 'Nick',
-              'last_name' => 'wargnier'
-            },
-            'order_deliveries' => [
-              {'foo' => 'bar'}
-            ]
-          }
+          response = client.get("#{api_path}/#{id}")
           self.new(response)
         end
       end

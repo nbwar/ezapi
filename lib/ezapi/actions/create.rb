@@ -3,7 +3,9 @@ module EZApi
     module Create
       module ClassMethods
         def create(params = {})
-          new(params).save
+          obj = new(params)
+          obj.save
+          obj
         end
       end
 
