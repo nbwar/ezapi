@@ -59,12 +59,12 @@ module ThirdPartyApp
 end
 
 
-ThirdPartyApp::User.customer_action
+ThirdPartyApp::User.custom_action
 ThirdPartyApp::User.new.custom_instance_action
 ```
 
 
-#### Add customer actions to actions array
+#### Add custome actions to actions array
 ```ruby
 module ThirdPartyApp
   module Actions
