@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 module TestApp
   extend EZApi::Client
 
@@ -23,7 +25,6 @@ RSpec.describe EZApi::Client do
     end
 
     describe 'errors' do
-
       shared_examples_for 'raises error and sets message' do |error_class|
         it 'should set error message on raised error' do
           begin
@@ -36,7 +37,6 @@ RSpec.describe EZApi::Client do
       end
 
       context 'api key not set' do
-
         it 'should throw AuthenticationError if api_key is not set' do
           expect{TestAppWithoutKey.request('/url', :post )}.to raise_error(EZApi::AuthenticationError)
         end

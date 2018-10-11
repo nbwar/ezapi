@@ -24,11 +24,11 @@ module EZApi
       self.key = key
     end
 
-    def request(api_url, method, params={})
+    def request(full_url, method, params={})
       raise AuthenticationError.new("API key is not set for #{self.app_name}.") unless self.key
 
       begin
-        response = RestClient::Request.execute(method: method, url: api_url, payload: params.to_json, headers: self.request_headers)
+        response = RestClient::Request.execute(method: method, url: full_url, payload: params.to_json, headers: request_headers)
         JSON.parse(response) unless response.empty?
       rescue RestClient::ExceptionWithResponse => e
         if response_code = e.http_code and response_body = e.http_body

@@ -26,10 +26,12 @@ module EZApi
           key = key.to_s.underscore
           define_attribute_accessors(key) unless respond_to?(key)
 
-          # TODO: Support creating real objects based on associations & id_only attributes
+          # TODO: Support creating real api objects based on associations
           case value
           when Array
-            value = value.map {|obj| ObjectBase.new(obj)}
+            value = value.map do |obj|
+              obj.is_a?(Hash) ? ObjectBase.new(obj) : obj
+            end
           when Hash
             value = ObjectBase.new(value)
           end

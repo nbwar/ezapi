@@ -6,7 +6,6 @@ require 'active_support/core_ext/object/json'
 # Main
 require "ezapi/version"
 require "ezapi/errors"
-require "ezapi/utils"
 require "ezapi/client"
 require "ezapi/dsl"
 require "ezapi/object_base"

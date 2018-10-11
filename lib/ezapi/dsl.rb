@@ -5,7 +5,6 @@ module EZApi
     end
 
     module ClassMethods
-
       def path(url)
         define_singleton_method(:api_path) { url }
       end
