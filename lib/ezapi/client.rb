@@ -4,19 +4,32 @@ require 'base64'
 require 'uri'
 
 module EZApi
-  module ApiClient
-    attr_accessor :api_key
-    attr_reader :base_url, :encoded_api_key, :app_name
+  module Client
+    attr_accessor :key, :base_url
+
+    def self.extended(base)
+      [:get, :post, :put, :patch, :delete].each do |method|
+        define_method(method) do |path, params = {}|
+          full_path = full_api_path(path)
+          request(full_path, :put, params)
+        end
+      end
+    end
+
+    def api_url(url)
+      self.base_url = url
+    end
+
+    def api_key(key)
+      self.key = key
+    end
 
     def request(api_url, method, params={})
-      raise AuthenticationError.new("API key is not set for #{self.app_name}.") unless @api_key
+      raise AuthenticationError.new("API key is not set for #{self.app_name}.") unless self.key
 
       begin
         response = RestClient::Request.execute(method: method, url: api_url, payload: params.to_json, headers: self.request_headers)
-
-        if response != ''
-          JSON.parse(response)
-        end
+        JSON.parse(response) unless response.empty?
       rescue RestClient::ExceptionWithResponse => e
         if response_code = e.http_code and response_body = e.http_body
           handle_api_error(response_code, JSON.parse(response_body))
@@ -30,29 +43,38 @@ module EZApi
 
     protected
       def app_name
-        @app_name ||= Utils.demodulize(self.name)
+        self.name.demodulize
+      end
+
+      def full_api_path(path)
+        URI.join(base_url, path).to_s
       end
 
       def request_headers
         {
-          Authorization: "Basic #{self.encoded_api_key}",
+          Authorization: "Basic #{encoded_api_key}",
           content_type: :json,
           accept: :json
         }
       end
 
       def encoded_api_key
-        @encoded_api_key ||= Base64.urlsafe_encode64(@api_key)
+        Base64.urlsafe_encode64(self.key)
+      end
+
+      def parse_error_message(body)
+        body['message']
       end
 
       def handle_api_error(code, body)
+        message = parse_error_message(body)
         case code
         when 400, 404
-          raise InvalidRequestError.new(body["message"])
+          raise InvalidRequestError.new(message)
         when 401
-          raise AuthenticationError.new(body["message"])
+          raise AuthenticationError.new(message)
         else
-          raise ApiError.new(body["message"])
+          raise ApiError.new(message)
         end
       end
 

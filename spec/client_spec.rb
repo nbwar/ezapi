@@ -1,14 +1,16 @@
-class TestApp #< EZApiObject
-  extend EZApi::ApiClient
+module TestApp
+  extend EZApi::Client
+
+  api_url 'foo'
+  api_key 'bar'
 end
 
-RSpec.describe EZApi::ApiClient do
-  let(:api_key) { 'test_api_key' }
+module TestAppWithoutKey
+  extend EZApi::Client
+  api_url = 'foo'
+end
 
-  before do
-    TestApp.api_key = api_key
-  end
-
+RSpec.describe EZApi::Client do
   describe '#request' do
     context 'success' do
       before do
@@ -34,10 +36,9 @@ RSpec.describe EZApi::ApiClient do
       end
 
       context 'api key not set' do
-        let(:api_key) { nil }
 
         it 'should throw AuthenticationError if api_key is not set' do
-          expect{TestApp.request('/url', :post )}.to raise_error(EZApi::AuthenticationError)
+          expect{TestAppWithoutKey.request('/url', :post )}.to raise_error(EZApi::AuthenticationError)
         end
       end
 
