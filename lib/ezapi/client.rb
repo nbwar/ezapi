@@ -11,7 +11,7 @@ module EZApi
       [:get, :post, :put, :patch, :delete].each do |method|
         define_method(method) do |path, params = {}|
           full_path = full_api_path(path)
-          request(full_path, :put, params)
+          request(full_path, method, params)
         end
       end
     end
