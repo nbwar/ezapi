@@ -6,13 +6,14 @@ module EZApi
 
     def initialize(params={})
       assign_attributes(params)
+      @params = params.with_indifferent_access
     end
 
     def id
       attributes['id']
     end
 
-     def id=(value)
+    def id=(value)
       attributes['id'] = value
     end
 
@@ -22,10 +23,11 @@ module EZApi
 
     private
       def assign_attributes(params)
+        return unless params.present?
+
         params.each do |key, value|
           key = key.to_s.underscore
           define_attribute_accessors(key) unless respond_to?(key)
-
           # TODO: Support creating real api objects based on associations
           case value
           when Array

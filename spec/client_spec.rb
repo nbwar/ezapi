@@ -5,6 +5,9 @@ module TestApp
 
   api_url 'foo'
   api_key 'bar'
+
+  class User < EZApi::ObjectBase
+  end
 end
 
 module TestAppWithoutKey
@@ -21,6 +24,15 @@ RSpec.describe EZApi::Client do
 
       it 'should parse response' do
         expect(TestApp.request('/url', :post )).to eq({"success"=>"true"})
+      end
+
+      context 'custom headers and request arguments' do
+        let(:headers) { { content_type: 'text/html' } }
+        let(:request_arguments) { { verify_ssl: false } }
+
+        it 'should parse response' do
+          expect(TestApp.request('/url', :post, headers, request_arguments )).to eq({"success"=>"true"})
+        end
       end
     end
 
@@ -45,7 +57,7 @@ RSpec.describe EZApi::Client do
       describe 'api errors' do
         let(:http_code) { 404 }
         let(:message) { '' }
-        let(:http_body) { {"message"=>message}.to_json }
+        let(:http_body) { {'error' => {"message"=>message}}.to_json }
 
         before do
           allow_any_instance_of(RestClient::ExceptionWithResponse).to receive(:http_code).and_return(http_code)
@@ -92,6 +104,15 @@ RSpec.describe EZApi::Client do
           it_should_behave_like 'raises error and sets message', EZApi::ConnectionError
         end
 
+        context 'SocketError' do
+          let(:message) { 'Could not connect to TestApp.' }
+          before do
+            expect(RestClient::Request).to receive(:execute).and_raise(SocketError)
+          end
+
+          it_should_behave_like 'raises error and sets message', EZApi::ConnectionError
+        end
+
       end
     end
   end
@@ -99,6 +120,31 @@ RSpec.describe EZApi::Client do
   describe '#app_name' do
     it 'should be the app name' do
       expect(TestApp.send(:app_name)).to eq('TestApp')
+    end
+  end
+
+  describe '#full_api_path' do
+    let(:base_url) { 'https://instacart.com/api' }
+    let(:path) { 'customers' }
+
+    before do
+      allow(TestApp).to receive(:base_url).and_return(base_url)
+    end
+
+    subject { TestApp::User.client.send(:full_api_path, path) }
+
+    context 'without trailing slash' do
+      let(:base_url) { 'https://instacart.com/api' }
+      let(:path) { 'customers' }
+
+      it { is_expected.to eq 'https://instacart.com/api/customers' }
+    end
+
+    context 'with trailing slash' do
+      let(:base_url) { 'https://instacart.com/api/' }
+      let(:path) { '/customers/' }
+
+      it { is_expected.to eq 'https://instacart.com/api/customers/' }
     end
   end
 
