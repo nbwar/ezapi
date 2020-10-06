@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'rest-client', '~> 2.0'
   spec.add_dependency 'activesupport', '>= 4.2'
+  spec.add_dependency 'nokogiri', '~> 1.6', '>= 1.6.8'
   spec.add_development_dependency 'bundler', '~> 2.0', '>= 2.0.1'
   spec.add_development_dependency "rake", ">= 12.3.3"
   spec.add_development_dependency "rspec", "~> 3.0"

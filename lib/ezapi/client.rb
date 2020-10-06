@@ -2,6 +2,7 @@ require 'rest-client'
 require 'json'
 require 'base64'
 require 'uri'
+require 'nokogiri'
 
 module EZApi
   module Client
@@ -24,13 +25,23 @@ module EZApi
     end
 
     def request(full_url, method, params={}, headers=self.request_headers, request_arguments={})
-      default_request = {method: method, url: full_url, payload: params.to_json, headers: headers}
+      response = raw_request(full_url, method, params, headers, request_arguments)
 
       begin
-        response = RestClient::Request.execute(default_request.merge(request_arguments))
-        JSON.parse(response) unless response.empty?
+        if response.headers && response.headers[:content_type] == "application/xml"
+          Nokogiri::XML(response.body)
+        else
+          JSON.parse(response.body) unless response.empty?
+        end
       rescue JSON::ParserError => e
         nil
+      end
+    end
+
+    def raw_request(full_url, method, params={}, headers=self.request_headers, request_arguments={})
+      default_request = {method: method, url: full_url, payload: params.to_json, headers: headers}
+      begin
+        RestClient::Request.execute(default_request.merge(request_arguments))
       rescue RestClient::ExceptionWithResponse => e
         if response_code = e.http_code and response_body = e.http_body
           handle_api_error(response_code, response_body)
