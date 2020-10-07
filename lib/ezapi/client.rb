@@ -39,6 +39,7 @@ module EZApi
     end
 
     def raw_request(full_url, method, params={}, headers=self.request_headers, request_arguments={})
+      params = params.is_a?(Hash) ? params.to_json : params
       default_request = {method: method, url: full_url, payload: params, headers: headers}
       begin
         RestClient::Request.execute(default_request.merge(request_arguments))
