@@ -49,7 +49,7 @@ module EZApi
         else
           handle_restclient_error(e)
         end
-      rescue RestClient::Exception, Errno::ECONNREFUSED, SocketError => e
+      rescue RestClient::Exception, Errno::ECONNREFUSED, SocketError, Timeout::Error  => e
         handle_restclient_error(e)
       end
     end

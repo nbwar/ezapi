@@ -131,6 +131,14 @@ RSpec.describe EZApi::Client do
           it_should_behave_like 'raises error and sets message', EZApi::ConnectionError
         end
 
+        context 'Timeout::Error' do
+          let(:message) { 'Could not connect to TestApp.' }
+          before do
+            expect(RestClient::Request).to receive(:execute).and_raise(Timeout::Error)
+          end
+
+          it_should_behave_like 'raises error and sets message', EZApi::ConnectionError
+        end
       end
     end
   end
